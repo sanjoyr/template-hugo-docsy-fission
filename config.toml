@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-baseURL = "https://fission.io/"
+baseURL = "https://sanjoyroy.com/"
 enableRobotsTXT = true
-title = "Fission"
+title = "Sanjoy Roy"
 
 # Will give values to .Lastmod etc.
 enableGitInfo = true
@@ -90,18 +90,18 @@ id = ""
 [languages]
 [languages.en]
 [languages.en.params]
-description = "Fast Serverless Functions for Kubernetes"
+description = "Senior Backend & AI Developer | Architect of Agentic AI & Cloud Applications | Python, RAG & LLM Specialist"
 languageName = "English"
-title = "Fission"
+title = "Sanjoy Roy"
 # Weight used for sorting.
 weight = 1
 
 # Everything below this are Site Params
 
 [params]
-copyright = "Copyright © 2020 Fission Project"
-github_repo = "https://github.com/fission/fission.io"
-github_project_repo = "https://github.com/fission/fission"
+copyright = "Copyright © 2025 Wara KarmaYpga"
+github_repo = "https://wara.in"
+github_project_repo = "https://wara.in"
 privacy_policy = ""
 
 # Google Custom Search Engine ID. Remove or comment out to disable search.
@@ -125,9 +125,9 @@ notoc = true
 images = ["images/og-image-fission.png"]
 
 [params.social]
-github = 'fission'
-slackurl = "/slack"
-twitter = 'fissionio'
+github = 'sanjoyr'
+slackurl = "/sanjoyr"
+twitter = 'sanjoyroy_com'
 
 [[params.whatsnew]]
 badge = 'FISSION DZONE REFCARD'
