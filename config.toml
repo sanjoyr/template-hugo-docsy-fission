@@ -16,6 +16,7 @@ baseURL = "https://sanjoyroy.com/"
 enableRobotsTXT = true
 title = "Sanjoy Roy"
 
+
 # Will give values to .Lastmod etc.
 enableGitInfo = true
 
@@ -99,6 +100,9 @@ weight = 1
 # Everything below this are Site Params
 
 [params]
+recaptcha_site_key = "6LfTqvQrAAAAAEVAwh3RNwD2ovyKHGALGO-Pafv1"
+tenant_code = "RAY"
+
 copyright = "Copyright © 2025 Wara KarmaYpga"
 github_repo = "https://wara.in"
 github_project_repo = "https://wara.in"

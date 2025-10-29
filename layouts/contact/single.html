@@ -1,0 +1,219 @@
+{{ define "main" }}
+<section class="contact-section">
+  <h2 class="contact-title">Contact Us</h2>
+
+  <form id="contactForm" class="contact-form" novalidate>
+    <!-- Name -->
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required />
+      <div class="error-text" id="error-name"></div>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required />
+      <div class="error-text" id="error-email"></div>
+    </div>
+
+    <!-- Message -->
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="5" required></textarea>
+      <div class="error-text" id="error-message"></div>
+    </div>
+
+    <!-- Hidden Tenant Code -->
+    <input
+      type="hidden"
+      id="tenant_code"
+      name="tenant_code"
+      value="{{ .Site.Params.tenant_code }}"
+    />
+
+    <!-- Hidden Honeytrap Fields -->
+    <input
+      type="text"
+      id="description"
+      name="description"
+      class="hidden-field"
+      autocomplete="off"
+    />
+    <textarea id="extra_info" name="extra_info" class="hidden-field"></textarea>
+
+    <!-- Result Message -->
+    <div id="resultMessage" class="result-message"></div>
+
+    <!-- Submit Button -->
+    <button type="submit" id="submitBtn" class="submit-btn">
+      Send Message
+    </button>
+  </form>
+</section>
+
+<!-- ✅ reCAPTCHA Enterprise -->
+<script src="https://www.google.com/recaptcha/enterprise.js?render={{ .Site.Params.recaptcha_site_key }}"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("contactForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const resultMessage = document.getElementById("resultMessage");
+    const siteKey = "{{ .Site.Params.recaptcha_site_key }}";
+    const apiEndpoint =
+      "https://rayaihub.el.r.appspot.com/api/v1/contact/submit_contact_form";
+
+    function showError(id, message) {
+      document.getElementById("error-" + id).innerText = message;
+    }
+
+    function clearErrors() {
+      ["name", "email", "message"].forEach((id) => showError(id, ""));
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearErrors();
+      resultMessage.innerHTML = "";
+      resultMessage.className = "result-message";
+
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const message = form.message.value.trim();
+      let valid = true;
+
+      if (name.length < 2) {
+        showError("name", "Please enter your full name.");
+        valid = false;
+      }
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        showError(
+          "email",
+          "Please enter a valid email address (e.g. name@example.com)."
+        );
+        valid = false;
+      }
+      if (message.length < 5) {
+        showError("message", "Message must be at least 5 characters.");
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Sending...";
+
+      try {
+        const token = await grecaptcha.enterprise.execute(siteKey, {
+          action: "Contact_action",
+        });
+        const data = {
+          name,
+          email,
+          message,
+          tenant_code: form.tenant_code.value,
+          description: form.description.value,
+          extra_info: form.extra_info.value,
+          token: token,
+        };
+
+        const response = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          resultMessage.innerHTML = "✅ Thank you! Your message has been sent.";
+          resultMessage.classList.add("success");
+          form.reset();
+        } else {
+          const errText = await response.text();
+          resultMessage.innerHTML = "⚠️ Failed to send: " + errText;
+          resultMessage.classList.add("error");
+        }
+      } catch (err) {
+        resultMessage.innerHTML = "⚠️ Error: " + err.message;
+        resultMessage.classList.add("error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Send Message";
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Layout */
+  .contact-section {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 1rem;
+  }
+  .contact-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .form-group {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  input,
+  textarea {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  input:focus,
+  textarea:focus {
+    border-color: #0066cc;
+    outline: none;
+  }
+  .error-text {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+  .hidden-field {
+    display: none !important;
+  }
+  .submit-btn {
+    background-color: #0066cc;
+    color: #fff;
+    border: none;
+    padding: 0.7rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s;
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .submit-btn:hover:not(:disabled) {
+    background-color: #0055aa;
+  }
+  .result-message {
+    margin-top: 1rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  .result-message.success {
+    color: green;
+  }
+  .result-message.error {
+    color: red;
+  }
+</style>
+{{ end }}
